@@ -197,6 +197,3 @@ This section is intentionally left for the live deployed application URL.
 
 This project is intended to provide a professional operational dashboard for live wind forecast analysis. It focuses on real data matching, data interpretation, and transparent performance metrics rather than static mock values.
 
-## License
-
-This project is intended for demonstration and academic or assignment use unless otherwise specified by the project owner.
