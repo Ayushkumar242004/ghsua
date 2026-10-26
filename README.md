@@ -188,10 +188,8 @@ http://localhost:8000/docs
 
 ## Deployment Link
 
-This section is intentionally left for the live deployed application URL.
-
 ### Live application
-- Vercel / Heroku deployment link: TBD
+- Deployed URL: https://wattmight.vercel.app/
 
 ## Notes
 
