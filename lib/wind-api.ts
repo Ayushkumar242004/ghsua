@@ -17,7 +17,12 @@ export type WindResponse = {
   requestedAt: string
 }
 
-const backendUrl = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:8000').replace(/\/$/, '')
+const backendUrl = (
+  process.env.WATTSIGHT_BACKEND_URL ??
+  process.env.NEXT_PUBLIC_WATTSIGHT_BACKEND_URL ??
+  process.env.NEXT_PUBLIC_BACKEND_URL ??
+  'http://localhost:8000'
+).replace(/\/$/, '')
 
 async function request(path: string, params: Record<string, string>, signal?: AbortSignal): Promise<WindResponse> {
   const query = new URLSearchParams(params)

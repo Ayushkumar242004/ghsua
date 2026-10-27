@@ -143,7 +143,7 @@ pip install -r requirements.txt
 Create the required `.env` files and set the necessary values. The frontend typically uses values such as:
 
 ```env
-NEXT_PUBLIC_BACKEND_URL=http://127.0.0.1:8000
+WATTSIGHT_BACKEND_URL=http://127.0.0.1:8000
 ```
 
 The backend may also require BMRS or service-specific configuration values depending on deployment.
