@@ -26,6 +26,8 @@ The dashboard helps users answer several practical questions:
 - Frontend: https://wattmight.vercel.app/
 - Backend API: https://ghsua.onrender.com/docs
 
+> Note: the backend is hosted on Render, and Render may take 1–2 minutes to respond on the first request after the service has been idle or sleeping. If the dashboard appears to load slowly on the first visit, please wait a minute or two and refresh the page.
+
 ## System architecture
 
 ```text
