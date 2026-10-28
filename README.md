@@ -1,46 +1,94 @@
 # WattSight
 
-WattSight is a full-stack wind forecasting and analytics dashboard designed to compare actual wind generation against forecasted values using BMRS data. The application combines a Next.js frontend with a FastAPI backend to provide operational insight, forecast error analysis, delivery-period matching, and downloadable reporting.
+WattSight is a full-stack UK wind forecasting dashboard that compares live BMRS actual generation against forecasted wind generation. The platform is designed for operational planning, portfolio visibility, and quick decision support for day-ahead energy trading and renewable balancing.
 
-## Project Purpose
+## What the application does
 
-The platform helps users understand:
-- how wind output compares with forecasted generation
-- how accurate the forecast is over a selected date
-- which delivery period is next
-- how forecast bias, error, and accuracy behave over time
-- how to review and export analysis in a professional format
+The dashboard helps users answer several practical questions:
+- How much wind generation was actually produced on a selected day?
+- How close was the forecast to the real outcome?
+- Which delivery periods were most inaccurate or least reliable?
+- What is the latest forecast and how does it compare to actual generation?
+- Can the analysis be exported in a professional PDF report for stakeholders?
 
-## Architecture
+## Key product features
 
-The application follows a simple two-tier architecture:
+- Live BMRS data integration for actual wind output and forecast data
+- Date-based dashboard selection for delivery periods
+- Forecast-vs-actual visual comparison by time bucket
+- Accuracy, bias, and error metrics for operational insight
+- Explorer view for detailed matched records and period-level inspection
+- Methodology section explaining how calculations are performed
+- PDF export for stakeholder reporting
+
+## Live deployment
+
+- Frontend: https://wattmight.vercel.app/
+- Backend API: https://ghsua.onrender.com/docs
+
+## System architecture
 
 ```text
-User Browser
+Browser / User
    ↓
-Next.js Frontend (React + TypeScript)
+Next.js frontend (React + TypeScript)
    ↓
-FastAPI Backend (Python)
+FastAPI backend (Python)
    ↓
-BMRS / External Data Provider
+Elexon BMRS APIs (FUELHH and WINDFOR)
    ↓
-Analytics + Forecast Matching + Reporting
+Analytics layer for matching, error calculation, and reporting
 ```
 
 ### Frontend
-- Built with Next.js and TypeScript
-- Renders the dashboard, charts, summary cards, and tables
-- Allows date-based filtering and metric exploration
-- Calls backend endpoints for live forecast and actual generation data
-- Exports a PDF report for selected performance data
+The frontend is built with Next.js and React, and it includes:
+- Overview dashboard for selected-date decision support
+- Accuracy page summarizing forecasting quality metrics
+- Explorer page with detailed actual/forecast comparison rows
+- Methodology page explaining the underlying calculations
+- PDF report export for sharing or formal review
 
 ### Backend
-- Built with Python and FastAPI
-- Handles data retrieval and analytics processing
-- Matches actual generation records to the most recent valid forecast before each delivery time
-- Exposes endpoints for data access and analysis
+The backend is built with FastAPI and Python and provides:
+- live BMRS data retrieval
+- route-level abstractions for actual and forecast datasets
+- validation of date and time filters
+- data normalization and response envelopes
+- a clean separation between external data fetch and analytics logic
 
-## Directory Structure
+## Main pages in the product
+
+### Overview
+This is the main landing page. It shows:
+- selected delivery date
+- latest forecast value
+- actual generation value
+- forecast accuracy score
+- forecast vs actual chart over the day
+- next delivery period context
+
+### Accuracy
+This page focuses on the quality of the forecast. It helps answer:
+- How reliable was the forecast for this day?
+- Was the forecast consistently above or below actual output?
+- How much difference existed between forecast and actual generation?
+
+### Explorer
+This page presents detailed period-level data so the user can inspect:
+- time bucket
+- forecast generation
+- actual generation
+- error amount
+- whether the forecast was valid for that delivery period
+
+### Methodology
+This page explains the logic behind the dashboard:
+- BMRS actuals and forecasts are pulled from Elexon datasets
+- records are matched by delivery period and publish timing
+- the most recent eligible forecast before a delivery period is used
+- statistical terms such as mean absolute error, bias, and accuracy are defined
+
+## Repository structure
 
 ```text
 WattSight/
@@ -50,20 +98,31 @@ WattSight/
 │   └── page.tsx
 ├── backend/
 │   ├── app/
+│   │   ├── api/
+│   │   │   ├── routes/
+│   │   │   │   ├── health.py
+│   │   │   │   └── wind.py
+│   │   ├── config.py
 │   │   ├── main.py
+│   │   ├── schemas/
+│   │   │   └── wind.py
 │   │   └── services/
-│   │       └── analytics_service.py
+│   │       ├── analytics_service.py
+│   │       └── bmrs_client.py
 │   ├── Dockerfile
-│   └── requirements.txt
+│   ├── requirements.txt
+│   └── .env
 ├── components/
 │   ├── ui/
 │   │   └── button.tsx
-│   └── wattsight-dashboard.tsx
+│   ├── wattsight-dashboard.tsx
+│   └── wattsight-live-dashboard.tsx
 ├── lib/
 │   ├── utils.ts
 │   └── wind-api.ts
 ├── public/
 ├── .env
+├── .env.example
 ├── components.json
 ├── docker-compose.yml
 ├── next.config.mjs
@@ -76,47 +135,18 @@ WattSight/
 └── ...
 ```
 
-### File and Directory Details
+## Local setup
 
-- `app/` — frontend application entry files and global styling
-- `app/page.tsx` — main landing page for the dashboard
-- `app/layout.tsx` — application shell and top-level layout
-- `app/globals.css` — all styling for the dashboard and page layout
-- `components/` — reusable frontend UI and dashboard logic
-- `components/wattsight-dashboard.tsx` — main dashboard implementation, metrics, charts, and reporting
-- `components/ui/` — UI primitives such as button components
-- `lib/` — helper functions and API client logic
-- `lib/wind-api.ts` — requests to the backend for actual and forecast data
-- `backend/` — Python backend service and dependencies
-- `backend/app/main.py` — FastAPI startup and route registration
-- `backend/app/services/analytics_service.py` — forecast matching and analytics computations
-- `backend/requirements.txt` — backend Python dependencies
-- `public/` — static frontend assets
-- `docker-compose.yml` — containerized service orchestration
-- `package.json` — frontend scripts and dependencies
-- `tsconfig.json` — TypeScript configuration
-- `.env` — runtime local environment variables
-
-## Prerequisites
-
-Before running the application make sure you have:
-- Node.js installed
-- npm or pnpm installed
-- Python 3.10+ installed
-- required environment values configured for the backend and frontend
-
-## How to Start the Application
+### Prerequisites
+- Node.js 18+
+- npm or pnpm
+- Python 3.10+
+- access to the BMRS upstream dataset through the backend config
 
 ### 1. Install frontend dependencies
 
 ```bash
 npm install
-```
-
-If using pnpm instead:
-
-```bash
-pnpm install
 ```
 
 ### 2. Install backend dependencies
@@ -132,7 +162,7 @@ On Windows PowerShell:
 .venv\Scripts\Activate.ps1
 ```
 
-Then install the backend requirements:
+Then:
 
 ```bash
 pip install -r requirements.txt
@@ -140,24 +170,31 @@ pip install -r requirements.txt
 
 ### 3. Configure environment variables
 
-Create the required `.env` files and set the necessary values. The frontend typically uses values such as:
+Frontend:
 
 ```env
-WATTSIGHT_BACKEND_URL=http://127.0.0.1:8000
+WATTSIGHT_BACKEND_URL=http://localhost:8000
 ```
 
-The backend may also require BMRS or service-specific configuration values depending on deployment.
+Backend example:
 
-### 4. Start the backend
+```env
+BMRS_BASE_URL=https://data.elexon.co.uk/bmrs/api/v1
+FRONTEND_ORIGINS=http://localhost:3000,https://wattmight.vercel.app
+HTTP_CONNECT_TIMEOUT=10
+HTTP_READ_TIMEOUT=60
+HTTP_MAX_RETRIES=2
+PORT=10000
+```
 
-From the project root:
+### 4. Run the backend
 
 ```bash
 cd backend
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 5. Start the frontend
+### 5. Run the frontend
 
 From the project root:
 
@@ -165,33 +202,28 @@ From the project root:
 npm run dev
 ```
 
-The frontend should run locally at:
+Then open:
 
 ```text
 http://localhost:3000
 ```
 
-The FastAPI API documentation is available at:
+API documentation is available at:
 
 ```text
 http://localhost:8000/docs
 ```
 
-## Application Flow
+## How the app works
 
-1. User selects a delivery date in the dashboard.
-2. The frontend requests actual generation data from the backend.
-3. The backend fetches forecast and generation records and applies validation logic.
-4. Forecast values are matched to relevant delivery periods based on publish timing.
-5. Summary metrics, error calculations, and comparison charts are computed.
-6. The user can review the dashboard and export a PDF report.
+1. The user opens the portal and selects a delivery date.
+2. The frontend requests actual and forecast wind generation from the backend.
+3. The backend fetches BMRS datasets and normalizes them into a usable format.
+4. Forecasts are matched to actuals using relevant delivery periods and publish timing.
+5. Error and accuracy metrics are calculated and displayed in the dashboard.
+6. The user can export a PDF report or review period-level details in the Explorer page.
 
-## Deployment Link
+## Notes for deployment and review
 
-### Live application
-- Deployed URL: https://wattmight.vercel.app/
-
-## Notes
-
-This project is intended to provide a professional operational dashboard for live wind forecast analysis. It focuses on real data matching, data interpretation, and transparent performance metrics rather than static mock values.
+This project is intended as a working pilot dashboard for renewable planning and operational energy review. It is built to show live forecasting quality and decision-support metrics using real BMRS data rather than static sample data.
 
